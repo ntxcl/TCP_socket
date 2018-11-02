@@ -62,17 +62,22 @@ def repeatRequest(section, clientSocket, hostname, port):
             clientSocket.send(msg.encode())
             data=clientSocket.recv(section.size)
         except:
-            #clientSocket.close()
+            clientSocket.close()
             clientSocket = socket(AF_INET, SOCK_STREAM)
             clientSocket.connect((hostname, port))
+
         size=len(data)
         digest=md5(data)
         string=True
+
         try:
             data.decode()
             print("decoded data")
         except:
             string=False
+            clientSocket.close()
+            clientSocket = socket(AF_INET, SOCK_STREAM)
+            clientSocket.connect((hostname, port))
 
         if size==0:
             clientSocket.close()
@@ -98,8 +103,6 @@ def repeatRequest(section, clientSocket, hostname, port):
             print(f'ok')
             return data
 
-
-
 def main(address, filename):
     hostname, port = parse_address(address)
 
@@ -115,11 +118,11 @@ def main(address, filename):
     #request for "SECTION"
     clientSocket = socket(AF_INET, SOCK_STREAM)
     clientSocket.connect((hostname, port))
-    # clientSocket.setblocking(0)
+    #clientSocket.setblocking(0)
     file_contents = bytearray(total_size)
 
-    for section in sections:
-        print(f"section={section.num}")
+    # for section in sections:
+    #     print(f"section={section.num}")
 
     for section in sections:
         
